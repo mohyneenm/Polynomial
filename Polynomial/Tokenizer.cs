@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Polynomial
 {
-    public class SimpleTokenizer : ITokenizer
+    public class Tokenizer : ITokenizer
     {
         public IList<string> Tokenize(string input)
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -31,16 +32,13 @@ namespace Polynomial
 
             foreach (var token in tokens)
             {
-                if (IsOperand(token))
+                if (Helpers.IsOperand(token))   // operand
                 {
                     AddToExpressionStack(token, stack);
                 }
-                else // operator
+                else if(Helpers.IsOperator(token))  // operator
                 {
                     var operatorType = Helpers.GetOperatorType(token);
-                    if (operatorType == Operator.None)
-                        continue;
-
                     var numOfArgs = NumberOfArgs(operatorType);
                     if (stack.Count > 1 && stack.Count < numOfArgs)
                     {
@@ -63,6 +61,8 @@ namespace Polynomial
 
             if (stack.Count == 1)
                 return stack.Pop();
+            else if(stack.Count == 0)
+                return new List<PolynomialNode<double>>();
             else
                 throw new Exception("too many values in stack");
         }
@@ -216,16 +216,6 @@ namespace Polynomial
         }
 
         /// <summary>
-        /// Returns true if token is an operand (as opposed to an operator), false otherwise.
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        private static bool IsOperand(string token)
-        {
-            return !(token == "+" || token == "-" || token == "*" || token == "/" || token == "^");
-        }
-
-        /// <summary>
         /// Returns the number of arguments an operator takes.
         /// </summary>
         /// <param name="op"></param>
@@ -236,6 +226,11 @@ namespace Polynomial
                 return 2;
             else
                 return -1;
+        }
+
+        public Expression Parse(string postfixExpression)
+        {
+            throw new NotImplementedException();
         }
     }
 }

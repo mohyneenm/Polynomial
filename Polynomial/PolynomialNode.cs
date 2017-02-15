@@ -19,5 +19,11 @@ namespace Polynomial
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            var variables = Variables.Count > 0 ? Variables.Select(kvp => kvp.Key + "^" + kvp.Value).Aggregate((s1, s2) => s1 + s2) : "";
+            return Coefficient.ToString() + variables;
+        }
     }
 }
