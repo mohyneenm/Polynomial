@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Polynomial
 {
-    public class SimpleExpressionConverter : IExpressionConverter
+    public class ExpressionConverter : IExpressionConverter
     {
         private Queue<string> outputQueue = new Queue<string>();
         private Stack<string> operatorStack = new Stack<string>();
@@ -25,7 +25,7 @@ namespace Polynomial
             outputQueue.Clear();
             operatorStack.Clear();
 
-            infixExpression = SanitizeInput(infixExpression);   // clean up for unary minus, equality, etc
+            infixExpression = SanitizeInput(infixExpression);   // handle unary minus, equality, etc
 
             using (var reader = new StringReader(infixExpression))
             {
@@ -33,14 +33,14 @@ namespace Polynomial
                 while ((peek = reader.Peek()) > -1)
                 {
                     var token = (char)peek;
-                    var tokenType = Helpers.GetOperatorType(token.ToString());
+                    var operatorType = Helpers.GetOperatorType(token.ToString());
 
                     if (char.IsLetterOrDigit(token))
                     {
                         // read the full operand which is of the form ax^k
                         ReadOperand(reader);
                     }
-                    else if (tokenType.In(Operator.Plus, Operator.Minus, Operator.Multiplication, Operator.Division))
+                    else if (Helpers.IsOperator(token.ToString()))
                     {
                         ReadOperator(reader, token);
                     }
@@ -93,7 +93,7 @@ namespace Polynomial
                 {
                     expr[1] = expr[1].Trim();
                     if (expr[1].First() == '-')
-                        expr[1] = "0" + expr[1];        // format to handle unary minus operator
+                        expr[1] = "0" + expr[1];            // format to handle unary minus operator
                 }
 
                 infixExpression = $"{expr[0]} - ({expr[1]})";

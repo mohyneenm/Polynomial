@@ -9,18 +9,24 @@ namespace Polynomial
 {
     public enum OperatorAssociativity
     {
+        NONE = 0,
         LEFT,
-        RIGHT,
-        NONE
+        RIGHT
+    }
+    public enum TokenType
+    {
+        None = 0,
+        Operand,
+        Operator
     }
     public enum Operator
     {
+        None = 0,
         Plus,
         Minus,
         Multiplication,
         Division,
-        Exponent,
-        None
+        Exponent
     }
     public enum VariableDisplayOrder
     {
@@ -31,6 +37,12 @@ namespace Polynomial
 
     public static class Helpers
     {
+        public static TokenType GetTokenType(string token)
+        {
+            return IsOperand(token) ? TokenType.Operand : 
+                   IsOperator(token) ? TokenType.Operator : 
+                   TokenType.None;
+        }
         public static Operator GetOperatorType(string token)
         {
             var operatorType = Operator.None;
@@ -59,10 +71,41 @@ namespace Polynomial
 
             return operatorType;
         }
+
+        /// <summary>
+        /// Returns true if token is an operand (as opposed to an operator), false otherwise.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static bool IsOperand(string token)
+        {
+            var isOperand = false;
+            var operatorType = Helpers.GetOperatorType(token);
+            if (operatorType == Operator.None)
+            {
+                var matchNum = Regex.Match(token, @"-?[0-9]+");
+                var matchVar = Regex.Match(token, @"[a-zA-Z]+");
+                isOperand = !string.IsNullOrEmpty(matchNum.Value) || !string.IsNullOrEmpty(matchVar.Value);
+            }
+            else
+            {
+                isOperand = false;
+            }
+
+            return isOperand;
+        }
+
+        /// <summary>
+        /// Returns true if token is an operator (+, -, *, /, etc), false otherwise.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static bool IsOperator(string token)
         {
-            return token == "+" || token == "-" || token == "*" || token == "/";
+            var operatorType = GetOperatorType(token);
+            return operatorType != Operator.None && Enum.IsDefined(typeof(Operator), operatorType);
         }
+
         public static int GetOperatorPrecedence(char operatorToken)
         {
             var precedence = -1;
@@ -110,7 +153,7 @@ namespace Polynomial
             return associativity;
         }
 
-        public static string GenerateOutputFormat(List<PolynomialNode<double>> nodes)
+        public static string GenerateOutputFormat(IList<PolynomialNode<double>> nodes)
         {
             var expression = "";
             foreach (var node in nodes)
@@ -123,6 +166,7 @@ namespace Polynomial
             expression = Regex.Replace(expression, @"\+", " + ");
             expression = Regex.Replace(expression, @"\-", " - ");
             expression = expression == "" ? "0" : expression;
+            expression = expression.Trim();
 
             return $"{expression} = 0";
         }
