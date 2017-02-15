@@ -8,6 +8,8 @@ namespace Polynomial
 {
     /// <summary>
     /// Supports polynomial terms of the form ax^k where 'a' is a double, 'x' is a variable and 'k' is an integer.
+    /// The Expressions have been implemented as a List of PolyNodes instead of a LinkedList or an Expression tree,
+    /// this is for simplicity.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class PolynomialNode<T> : IComparable<T>

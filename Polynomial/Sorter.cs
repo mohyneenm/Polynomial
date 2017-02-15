@@ -34,6 +34,10 @@ namespace Polynomial
                         else
                             return 0;
                     }
+                    else if(n1.Variables.Count > n2.Variables.Count)
+                    {
+                        return -1;
+                    }
                     return 0;
                 }
             });
